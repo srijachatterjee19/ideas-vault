@@ -55,7 +55,7 @@ export default function Home() {
         }
         setAuthenticated(true);
         load();
-      } catch (err) {
+      } catch {
         router.push("/login");
       }
     };
@@ -79,13 +79,16 @@ export default function Home() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    const tags = form.tags.split(",").map(t => t.trim()).filter(Boolean);
+    setLoading(true);
+    
+    try {
+      const tags = form.tags.split(",").map(t => t.trim()).filter(Boolean);
 
-    const parsed = IdeaInput.safeParse({ title: form.title, note: form.note, tags });
-    if (!parsed.success) {
-      setError(parsed.error.errors.map(er => er.message).join(" • "));
-      return;
-    }
+      const parsed = IdeaInput.safeParse({ title: form.title, note: form.note, tags });
+      if (!parsed.success) {
+        setError(parsed.error.issues.map(issue => issue.message).join(" • "));
+        return;
+      }
 
     const res = await fetch("/api/ideas", {
       method: "POST",
@@ -101,6 +104,12 @@ export default function Home() {
     const created: Idea = await res.json();
     setIdeas(prev => [created, ...prev]);
     setForm({ title: "", note: "", tags: "" });
+    } catch (error) {
+      console.error("Submit error:", error);
+      setError("Failed to create idea. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   // Delete idea
@@ -117,8 +126,8 @@ export default function Home() {
       await fetch("/api/logout", { method: "POST" });
       setAuthenticated(false);
       router.push("/login");
-    } catch (err) {
-      console.error("Logout failed:", err);
+    } catch {
+      console.error("Logout failed");
     }
   }
 
@@ -138,7 +147,7 @@ export default function Home() {
 
     const parsed = IdeaInput.safeParse({ title: editForm.title, note: editForm.note, tags });
     if (!parsed.success) {
-      setError(parsed.error.errors.map(er => er.message).join(" • "));
+      setError(parsed.error.issues.map(issue => issue.message).join(" • "));
       return;
     }
 
