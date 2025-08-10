@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { z } from "zod";
 
 // Client-side schema
@@ -19,9 +20,12 @@ type Idea = {
 };
 
 export default function Home() {
+  const router = useRouter();
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [authenticated, setAuthenticated] = useState(false);
+  const [showLogoutDropdown, setShowLogoutDropdown] = useState(false);
 
   // Create form
   const [form, setForm] = useState({ title: "", note: "", tags: "" });
@@ -41,8 +45,35 @@ export default function Home() {
   }
 
   useEffect(() => {
-    load();
-  }, []);
+    // Check authentication first
+    const checkAuth = async () => {
+      try {
+        const res = await fetch("/api/auth/check");
+        if (!res.ok) {
+          router.push("/login");
+          return;
+        }
+        setAuthenticated(true);
+        load();
+      } catch (err) {
+        router.push("/login");
+      }
+    };
+    
+    checkAuth();
+  }, [router]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showLogoutDropdown && !(event.target as Element).closest('.relative')) {
+        setShowLogoutDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showLogoutDropdown]);
 
   // Create new idea
   async function submit(e: React.FormEvent) {
@@ -78,6 +109,17 @@ export default function Home() {
     setIdeas(ideas.filter(i => i.id !== id)); // optimistic
     const res = await fetch(`/api/ideas?id=${id}`, { method: "DELETE" });
     if (!res.ok) setIdeas(prev);
+  }
+
+  // Logout function
+  async function handleLogout() {
+    try {
+      await fetch("/api/logout", { method: "POST" });
+      setAuthenticated(false);
+      router.push("/login");
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
   }
 
   // Edit handlers
@@ -135,13 +177,40 @@ export default function Home() {
 
   return (
     <main className="mx-auto max-w-3xl p-6">
-      <h1 className="text-2xl font-bold mb-4">Idea Vault</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Idea Vault</h1>
+        {authenticated && (
+          <div className="relative">
+            <button
+              onClick={() => setShowLogoutDropdown(!showLogoutDropdown)}
+              className="text-sm border rounded-lg px-3 py-1 hover:bg-black/5 flex items-center gap-2"
+            >
+              Account
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            {showLogoutDropdown && (
+              <div className="absolute right-0 mt-2 w-32 bg-black border border-gray-300 rounded-lg shadow-lg z-10">
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-800 rounded-lg transition-colors"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Create form */}
-      <form
-        onSubmit={submit}
-        className="grid gap-3 mb-6 bg-white/5 border rounded-2xl p-4"
-      >
+      {authenticated && (
+        <form
+          onSubmit={submit}
+          className="grid gap-3 mb-6 bg-white/5 border rounded-2xl p-4"
+        >
         <input
           className="border rounded-lg p-2"
           placeholder="Title"
@@ -169,7 +238,8 @@ export default function Home() {
         >
           Add
         </button>
-      </form>
+        </form>
+      )}
 
       {/* Search */}
       <input
@@ -215,20 +285,22 @@ export default function Home() {
                     </button>
                   </div>
                 ) : (
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => startEdit(i)}
-                      className="text-xs border rounded-lg px-2 py-1 hover:bg-black/5"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => remove(i.id)}
-                      className="text-xs border rounded-lg px-2 py-1 hover:bg-black/5"
-                    >
-                      Delete
-                    </button>
-                  </div>
+                  authenticated && (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => startEdit(i)}
+                        className="text-xs border rounded-lg px-2 py-1 hover:bg-black/5"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => remove(i.id)}
+                        className="text-xs border rounded-lg px-2 py-1 hover:bg-black/5"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )
                 )}
               </div>
 
