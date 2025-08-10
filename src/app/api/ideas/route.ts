@@ -1,17 +1,16 @@
 import { NextResponse } from "next/server";
-import { readIdeas, writeIdeas } from "@/lib/store";
-import { IdeaInput,IdeaUpdate } from "@/types/schema";
+import { IdeaInput, IdeaUpdate } from "@/types/schema";
 import { prisma } from "@/lib/prisma";
 import { hit } from "@/lib/ratelimit";
 
 export const runtime = "nodejs"; // Prisma needs Node
 
-function serialize(i: any) {
+function serialize(i: { id: number; title: string; note: string; tags: string[]; created_at: Date }) {
     return {
       id: i.id,
       title: i.title,
       note: i.note,
-      tags: Array.isArray(i.tags) ? i.tags : [], // Prisma JSON → JS array
+      tags: i.tags,
       created_at: i.created_at.toISOString(),
     };
   }
@@ -58,8 +57,9 @@ export async function POST(req: Request) {
         },
       });
       return NextResponse.json(serialize(created), { status: 201 });
-    } catch (e: any) {
-      return NextResponse.json({ error: e.message ?? "Invalid input" }, { status: 400 });
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : "Invalid input";
+      return NextResponse.json({ error: errorMessage }, { status: 400 });
     }
   }
 
@@ -109,7 +109,8 @@ export async function POST(req: Request) {
         },
       });
       return NextResponse.json(serialize(updated));
-    } catch (e: any) {
-      return NextResponse.json({ error: e.message ?? "Invalid input" }, { status: 400 });
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : "Invalid input";
+      return NextResponse.json({ error: errorMessage }, { status: 400 });
     }
   }
