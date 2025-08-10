@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "prisma generate && next build",
-    "build:prod": "NODE_ENV=production prisma generate && next build",
+    "build": "npx prisma generate && npx next build",
+    "build:prod": "NODE_ENV=production npx prisma generate && npx next build",
     "build:next": "next build",
     "start": "next start",
     "start:prod": "NODE_ENV=production next start",
@@ -20,7 +20,7 @@
     "db:seed:prod": "NODE_ENV=production npx prisma db seed",
     "postinstall": "prisma generate",
     "migrate:deploy": "prisma migrate deploy",
-    "vercel-build": "prisma generate && next build"
+    "vercel-build": "npx prisma generate && npx next build"
   },
   "dependencies": {
     "@prisma/client": "^6.13.0",
