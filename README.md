@@ -1,88 +1,172 @@
 # Idea Vault
 
-A modern, full-stack web application for capturing, organizing, and searching through your ideas. Built with Next.js, TypeScript, and Tailwind CSS.
+A modern, full-stack web application for capturing, organizing, and searching through your ideas. Built with Next.js 15, TypeScript, and Tailwind CSS with PostgreSQL database support.
 
-## Features
+## 🚀 Features
 
 - **Create Ideas**: Add new ideas with titles, notes, and tags
 - **Real-time Search**: Search through your ideas by title, note content, or tags
 - **Tag Organization**: Organize ideas with comma-separated tags
-- **Persistent Storage**: Ideas are stored in a database and persist between sessions
+- **Persistent Storage**: Ideas are stored in PostgreSQL database and persist between sessions
 - **Responsive Design**: Clean, modern UI that works on all devices
 - **Instant Updates**: Add and delete ideas without page refreshes
+- **Authentication**: Simple password-based authentication system
+- **Health Checks**: Built-in health monitoring endpoints
+- **Production Ready**: Docker support and production deployment configurations
 
-## Tech Stack
+## 🛠️ Tech Stack
 
-- **Frontend**: Next.js 14, React, TypeScript
-- **Styling**: Tailwind CSS
-- **Backend**: Next.js API routes
-- **Database**: (Configured via API routes)
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **Styling**: Tailwind CSS 4
+- **Backend**: Next.js API routes with server actions
+- **Database**: PostgreSQL with Prisma ORM
 - **State Management**: React hooks (useState, useEffect)
+- **Testing**: Cypress for end-to-end testing
+- **Deployment**: Docker, Docker Compose, Vercel support
+- **CI/CD**: GitHub Actions with automated testing
 
-### Prerequisites
+## 📋 Prerequisites
 
 - Node.js 18+ 
 - npm or yarn
+- Docker and Docker Compose (for local development)
+- PostgreSQL database (local or cloud)
 
-### Adding Ideas
+## 🚀 Quick Start
 
-1. Fill out the form at the top of the page:
-   - **Title**: A brief description of your idea
-   - **Note**: Detailed notes about your idea
-   - **Tags**: Comma-separated tags for organization (optional)
+### Local Development
 
-2. Click "Add" to save your idea
 
-### Searching Ideas
+1. **Start the database**
+   ```bash
+   docker-compose up -d db
+   ```
 
-- Use the search bar to find specific ideas
-- Search works across titles, notes, and tags
-- Results update in real-time as you type
+2. **Run database migrations**
+   ```bash
+   npx prisma migrate dev
+   npx prisma generate
+   ```
 
-### Managing Ideas
+3. **Start development server**
+   ```bash
+   npm run dev
+   ```
 
-- View all your ideas in a clean, card-based layout
-- Each idea shows creation date and associated tags
-- Delete ideas using the delete button on each card
+4. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
 
-## Project Structure
+### Production Build
 
-```
-idea-vault/
-├── src/
-│   ├── app/
-│   │   ├── ideas/
-│   │   │   └── route.ts          # API endpoints for ideas
-│   │   ├── layout.tsx            # Root layout component
-│   │   ├── page.tsx              # Main page with idea management
-│   │   └── globals.css           # Global styles
-│   ├── lib/
-│   │   └── store.ts              # Store configuration
-│   └── types/
-│       └── schema.ts             # TypeScript type definitions
-├── public/                        # Static assets
-├── package.json                   # Dependencies and scripts
-└── README.md                      # This file
+```bash
+# Build for production
+npm run build:prod
+
+# Start production server
+npm run start:prod
 ```
 
-## API Endpoints
+## 🐳 Docker Deployment
 
-- `GET /api/ideas` - Retrieve all ideas
+### Using Docker Compose (Recommended)
+
+```bash
+# Start all services
+docker-compose -f docker-compose.production.yml up -d
+
+# View logs
+docker-compose -f docker-compose.production.yml logs -f
+
+# Stop services
+docker-compose -f docker-compose.production.yml down
+```
+
+### Manual Docker Build
+
+```bash
+# Build production image
+npm run docker:build
+
+# Run container
+npm run docker:run
+```
+
+## ☁️ Vercel Deployment
+
+1. **Connect your GitHub repository to Vercel**
+2. **Set environment variables in Vercel:**
+   - `DATABASE_URL`: Your PostgreSQL connection string
+   - `ADMIN_PASSWORD`: Your admin password
+   - `NODE_ENV`: `production`
+3. **Deploy automatically on push to main branch**
+
+## 🧪 Testing
+
+### Cypress E2E Tests
+
+```bash
+# Open Cypress Test Runner
+npm run cypress:open
+
+# Run tests headlessly
+npm run cypress:run
+```
+
+### CI/CD Testing
+
+Tests run automatically on GitHub Actions for every push and pull request.
+
+## 🔌 API Endpoints
+
+- `GET /api/health` - Health check endpoint
+- `GET /api/ideas` - Retrieve all ideas (with pagination)
 - `POST /api/ideas` - Create a new idea
 - `DELETE /api/ideas?id={id}` - Delete an idea by ID
+- `POST /api/login` - Authenticate user
+- `POST /api/logout` - Logout user
+- `GET /api/auth/check` - Check authentication status
+- `POST /api/setup` - Database setup and health check
 
-## Development
+## 🎯 Available Scripts
 
-### Available Scripts
-
-- `npm run dev` - Start development server
+### Development
+- `npm run dev` - Start development server with Turbopack
 - `npm run build` - Build for production
+- `npm run build:prod` - Build for production with NODE_ENV=production
 - `npm run start` - Start production server
-- `npm run lint` - Run ESLint
+- `npm run start:prod` - Start production server with NODE_ENV=production
 
-### Code Style
+### Database
+- `npm run migrate:deploy` - Deploy database migrations
+- `npm run db:migrate:prod` - Deploy migrations in production
+- `npm run db:seed:prod` - Seed production database
 
-- TypeScript for type safety
-- ESLint for code quality
-- Tailwind CSS for styling
-- React functional components with hooks
+### Testing
+- `npm run cypress:open` - Open Cypress Test Runner
+- `npm run cypress:run` - Run Cypress tests headlessly
+
+### Docker
+- `npm run docker:build` - Build production Docker image
+- `npm run docker:run` - Run production container
+- `npm run docker:compose:prod` - Start production services
+- `npm run docker:compose:prod:down` - Stop production services
+
+### Build & Deploy
+- `npm run vercel-build` - Build command for Vercel deployment
+
+## 🔧 Configuration
+
+### Environment Variables
+
+- `DATABASE_URL`: PostgreSQL connection string
+- `ADMIN_PASSWORD`: Admin authentication password
+- `NODE_ENV`: Environment (development/production)
+- `PORT`: Server port (default: 3000)
+- `SESSION_SECRET`: Session encryption secret
+- `COOKIE_SECRET`: Cookie encryption secret
+
+### Database Schema
+
+The application uses Prisma with the following main entities:
+- **Idea**: Core entity with title, note, tags, and timestamps
+- **User**: Authentication and user management (future enhancement)

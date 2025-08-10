@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enable standalone output for Docker
-  output: 'standalone',
-  
   // ESLint configuration
   eslint: {
     // Warning: This allows production builds to successfully complete even if
@@ -60,20 +57,7 @@ const nextConfig = {
   
   // Webpack configuration for production
   webpack: (config, { dev, isServer }) => {
-    // Production optimizations
-    if (!dev && !isServer) {
-      config.optimization.splitChunks = {
-        chunks: 'all',
-        cacheGroups: {
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            chunks: 'all',
-          },
-        },
-      };
-    }
-    
+    // Keep webpack config simple for Vercel compatibility
     return config;
   },
 };
