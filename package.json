@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
-    "build:prod": "NODE_ENV=production next build",
+    "build": "prisma generate && prisma migrate deploy && next build",
+    "build:prod": "NODE_ENV=production prisma generate && prisma migrate deploy && next build",
+    "build:next": "next build",
     "start": "next start",
     "start:prod": "NODE_ENV=production next start",
     "cypress:open": "cypress open",

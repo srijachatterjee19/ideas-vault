@@ -1,13 +1,10 @@
 {
-  "buildCommand": "npm run migrate:deploy && npm run build",
+  "buildCommand": "chmod +x scripts/vercel-build.sh && ./scripts/vercel-build.sh",
   "installCommand": "npm install",
   "framework": "nextjs",
   "functions": {
     "src/app/api/**/*.ts": {
       "maxDuration": 30
     }
-  },
-  "env": {
-    "NODE_ENV": "production"
   }
 }
