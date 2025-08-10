@@ -5,12 +5,12 @@ import { hit } from "@/lib/ratelimit";
 
 export const runtime = "nodejs"; // Prisma needs Node
 
-function serialize(i: { id: number; title: string; note: string; tags: string[]; created_at: Date }) {
+function serialize(i: { id: number; title: string; note: string; tags: unknown; created_at: Date }) {
     return {
       id: i.id,
       title: i.title,
       note: i.note,
-      tags: i.tags,
+      tags: Array.isArray(i.tags) ? i.tags : [],
       created_at: i.created_at.toISOString(),
     };
   }

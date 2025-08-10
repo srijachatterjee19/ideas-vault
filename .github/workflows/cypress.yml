@@ -1,0 +1,76 @@
+name: Cypress Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup PostgreSQL
+        uses: supercharge/setup-postgres@v1
+        with:
+          postgres-version: '15'
+          postgres-password: 'postgres'
+          postgres-user: 'postgres'
+          postgres-db: 'idea_vault_test'
+
+      - name: Set environment variables
+        run: |
+          echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/idea_vault_test" >> $GITHUB_ENV
+          echo "ADMIN_PASSWORD=test-secret" >> $GITHUB_ENV
+          echo "NODE_ENV=test" >> $GITHUB_ENV
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Run database migrations
+        run: npx prisma migrate deploy
+
+      - name: Start development server
+        run: npm run dev &
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/idea_vault_test
+          ADMIN_PASSWORD: test-secret
+          NODE_ENV: test
+
+      - name: Wait for server to be ready
+        run: npx wait-on http://localhost:3000
+
+      - name: Run Cypress tests
+        run: npm run cypress:run
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/idea_vault_test
+          ADMIN_PASSWORD: test-secret
+          NODE_ENV: test
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots/
+          if-no-files-found: ignore
+
+      - name: Upload videos
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cypress-videos
+          path: cypress/videos/
+          if-no-files-found: ignore

@@ -5,8 +5,18 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "build:prod": "NODE_ENV=production next build",
     "start": "next start",
-    "lint": "next lint"
+    "start:prod": "NODE_ENV=production next start",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "lint": "next lint",
+    "docker:build": "docker build -f Dockerfile.production -t idea-vault:latest .",
+    "docker:run": "docker run -p 3000:3000 --env-file .env.production idea-vault:latest",
+    "docker:compose:prod": "docker-compose -f docker-compose.production.yml up -d",
+    "docker:compose:prod:down": "docker-compose -f docker-compose.production.yml down",
+    "db:migrate:prod": "NODE_ENV=production npx prisma migrate deploy",
+    "db:seed:prod": "NODE_ENV=production npx prisma db seed"
   },
   "dependencies": {
     "@prisma/client": "^6.13.0",
@@ -21,15 +31,18 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@testing-library/cypress": "^10.0.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.19",
+    "cypress": "^14.5.4",
     "eslint": "^9",
     "eslint-config-next": "15.4.6",
     "prisma": "^6.13.0",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wait-on": "^8.0.4"
   }
 }
