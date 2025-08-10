@@ -19,39 +19,10 @@ A modern, full-stack web application for capturing, organizing, and searching th
 - **Database**: (Configured via API routes)
 - **State Management**: React hooks (useState, useEffect)
 
-## Getting Started
-
 ### Prerequisites
 
 - Node.js 18+ 
 - npm or yarn
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone <your-repo-url>
-cd idea-vault
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Set up your environment variables (if needed):
-```bash
-# Create .env.local file and add any required environment variables
-```
-
-4. Run the development server:
-```bash
-npm run dev
-```
-
-5. Open [http://localhost:3000](http://localhost:3000) in your browser
-
-## Usage
 
 ### Adding Ideas
 
@@ -115,21 +86,3 @@ idea-vault/
 - ESLint for code quality
 - Tailwind CSS for styling
 - React functional components with hooks
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Built with [Next.js](https://nextjs.org/)
-- Styled with [Tailwind CSS](https://tailwindcss.com/)
-- Icons from [SVG Repo](https://www.svgrepo.com/)
