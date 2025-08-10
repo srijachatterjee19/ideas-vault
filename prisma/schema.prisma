@@ -16,4 +16,6 @@ model Idea {
   note       String
   tags       Json     @default("[]")
   created_at DateTime @default(now())
+
+  @@index([created_at])
 }
