@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "prisma generate && next build",
-    "build:prod": "NODE_ENV=production prisma generate && next build",
+    "build": "next build",
+    "build:prod": "NODE_ENV=production next build",
     "start": "next start",
     "start:prod": "NODE_ENV=production next start",
     "cypress:open": "cypress open",
@@ -16,7 +16,9 @@
     "docker:compose:prod": "docker-compose -f docker-compose.production.yml up -d",
     "docker:compose:prod:down": "docker-compose -f docker-compose.production.yml down",
     "db:migrate:prod": "NODE_ENV=production npx prisma migrate deploy",
-    "db:seed:prod": "NODE_ENV=production npx prisma db seed"
+    "db:seed:prod": "NODE_ENV=production npx prisma db seed",
+    "postinstall": "prisma generate",
+    "migrate:deploy": "prisma migrate deploy"
   },
   "dependencies": {
     "@prisma/client": "^6.13.0",
