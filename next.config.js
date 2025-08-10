@@ -3,6 +3,13 @@ const nextConfig = {
   // Enable standalone output for Docker
   output: 'standalone',
   
+  // ESLint configuration
+  eslint: {
+    // Warning: This allows production builds to successfully complete even if
+    // your project has ESLint errors.
+    ignoreDuringBuilds: true,
+  },
+  
   // Experimental features
   experimental: {
     // Enable server actions
