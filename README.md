@@ -91,15 +91,6 @@ npm run docker:build
 npm run docker:run
 ```
 
-## ☁️ Vercel Deployment
-
-1. **Connect your GitHub repository to Vercel**
-2. **Set environment variables in Vercel:**
-   - `DATABASE_URL`: Your PostgreSQL connection string
-   - `ADMIN_PASSWORD`: Your admin password
-   - `NODE_ENV`: `production`
-3. **Deploy automatically on push to main branch**
-
 ## 🧪 Testing
 
 ### Cypress E2E Tests
